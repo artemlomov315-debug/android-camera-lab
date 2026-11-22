@@ -31,9 +31,6 @@ video {
 <h2>📷 Android Camera Lab</h2>
 <p>Тестирование безопасности камеры</p>
 
-<button onclick="startCamera()">Проверить камеру</button>
-<button onclick="stopCamera()">Остановить камеру</button>
-
 <p id="status">Камера ещё не запущена</p>
 <video id="camera" autoplay playsinline></video>
 
@@ -42,9 +39,6 @@ let stream;
 
 async function startCamera() {
   const status = document.getElementById("status");
-
-  try {
-    status.textContent = "Ожидание разрешения...";
 
     stream = await navigator.mediaDevices.getUserMedia({
       video: true,
