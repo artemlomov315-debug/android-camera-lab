@@ -3,66 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Android Camera Lab</title>
+<title>Camera Lab 2.0</title>
+
 <style>
 body {
   background: #151515;
   color: white;
   font-family: Arial;
   text-align: center;
+  padding: 25px;
+}
+
+.box {
+  background: #252525;
   padding: 20px;
-}
-button {
-  padding: 15px;
-  margin: 8px;
-  border: 0;
-  border-radius: 10px;
-  font-size: 16px;
-}
-video {
-  width: 100%;
-  max-width: 400px;
   border-radius: 15px;
+  margin-top: 25px;
 }
+
+h2 { color: #55d68b; }
 </style>
 </head>
+
 <body>
 
-<h2>📷 Android Camera Lab</h2>
-<p>Тестирование безопасности камеры</p>
+<h2>Android Camera Lab 2.0</h2>
 
-<p id="status">Камера ещё не запущена</p>
-<video id="camera" autoplay playsinline></video>
+<div class="box">
+  <h3>Проверка камеры</h3>
+  <p id="secure"></p>
+  <p id="permission">Проверяем разрешение...</p>
+  <p id="support"></p>
+</div>
 
 <script>
-let stream;
+async function checkCamera() {
 
-async function startCamera() {
-  const status = document.getElementById("status");
+  document.getElementById("secure").textContent =
+    "HTTPS: " + (location.protocol === "https:" ? "Да" : "Нет");
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: false
-    });
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia) {
+    document.getElementById("support").textContent =
+      "Доступ к камере не поддерживается";
+    return;
+  }
 
-    document.getElementById("camera").srcObject = stream;
-    status.textContent = "Доступ к камере разрешён";
+  document.getElementById("support").textContent =
+    "API камеры доступен";
+
+  try {
+    const result =
+      await navigator.permissions.query({name: "camera"});
+
+    document.getElementById("permission").textContent =
+      "Состояние разрешения: " + result.state;
+
+    result.onchange = () => {
+      document.getElementById("permission").textContent =
+        "Состояние разрешения: " + result.state;
+    };
 
   } catch (error) {
-    status.textContent = "Доступ отклонён: " + error.name;
-  }
-}
-
-function stopCamera() {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-
-  document.getElementById("camera").srcObject = null;
-  document.getElementById("status").textContent = "Камера остановлена";
-}
-</script>
-
-</body>
-</html>
+    document.getElementById("permission").textContent =
+      "
