@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Android Camera Lab</title>
+<style>
+body {
+  background: #151515;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 20px;
+}
+button {
+  padding: 15px;
+  margin: 8px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 16px;
+}
+video {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 15px;
+}
+</style>
+</head>
+<body>
+
+<h2>📷 Android Camera Lab</h2>
+<p>Тестирование безопасности камеры</p>
+
+<button onclick="startCamera()">Проверить камеру</button>
+<button onclick="stopCamera()">Остановить камеру</button>
+
+<p id="status">Камера ещё не запущена</p>
+<video id="camera" autoplay playsinline></video>
+
+<script>
+let stream;
+
+async function startCamera() {
+  const status = document.getElementById("status");
+
+  try {
+    status.textContent = "Ожидание разрешения...";
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+
+    document.getElementById("camera").srcObject = stream;
+    status.textContent = "Доступ к камере разрешён";
+
+  } catch (error) {
+    status.textContent = "Доступ отклонён: " + error.name;
+  }
+}
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+
+  document.getElementById("camera").srcObject = null;
+  document.getElementById("status").textContent = "Камера остановлена";
+}
+</script>
+
+</body>
+</html>
